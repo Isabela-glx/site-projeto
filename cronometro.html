@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuração do Cronômetro</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="config-container">
+        <h2>Configurar Cronômetro</h2>
+        <label for="tempo">Definir tempo (minutos):</label>
+        <input type="number" id="tempo" min="1" value="10">
+        
+        <h3>Configurar Avisos</h3>
+        <label for="aviso1">Aviso antes de iniciar (segundos):</label>
+        <input type="number" id="aviso1" min="0" value="10">
+        <label for="aviso2">Aviso intermediário (segundos):</label>
+        <input type="number" id="aviso2" min="0" value="30">
+        
+        <button onclick="abrirCronometro()">Iniciar</button>
+    </div>
+
+    <script>
+        function abrirCronometro() {
+            let tempo = document.getElementById('tempo').value;
+            let aviso1 = document.getElementById('aviso1').value;
+            let aviso2 = document.getElementById('aviso2').value;
+            window.open(`cronometro.html?tempo=${tempo}&aviso1=${aviso1}&aviso2=${aviso2}`, '_blank', 'width=800,height=600');
+        }
+    </script>
+</body>
+</html>
