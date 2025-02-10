@@ -3,31 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Configuração do Cronômetro</title>
+    <title>Cronômetro</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="config-container">
-        <h2>Configurar Cronômetro</h2>
-        <label for="tempo">Definir tempo (minutos):</label>
-        <input type="number" id="tempo" min="1" value="10">
-        
-        <h3>Configurar Avisos</h3>
-        <label for="aviso1">Aviso antes de iniciar (segundos):</label>
-        <input type="number" id="aviso1" min="0" value="10">
-        <label for="aviso2">Aviso intermediário (segundos):</label>
-        <input type="number" id="aviso2" min="0" value="30">
-        
-        <button onclick="abrirCronometro()">Iniciar</button>
+    <video class="video-background" autoplay muted loop>
+        <source src="assets/video.mp4" type="video/mp4">
+    </video>
+    <audio id="musica" loop>
+        <source src="assets/musica.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="avisoSom">
+        <source src="assets/aviso.mp3" type="audio/mpeg">
+    </audio>
+    <div class="cronometro-container">
+        <h1 id="cronometro">00:00</h1>
     </div>
 
     <script>
-        function abrirCronometro() {
-            let tempo = document.getElementById('tempo').value;
-            let aviso1 = document.getElementById('aviso1').value;
-            let aviso2 = document.getElementById('aviso2').value;
-            window.open(`cronometro.html?tempo=${tempo}&aviso1=${aviso1}&aviso2=${aviso2}`, '_blank', 'width=800,height=600');
+        let params = new URLSearchParams(window.location.search);
+        let tempoTotal = params.get('tempo') * 60;
+        let segundosRestantes = tempoTotal;
+        let aviso1 = params.get('aviso1');
+        let aviso2 = params.get('aviso2');
+        let intervalo;
+
+        function tocarAviso() {
+            document.getElementById('avisoSom').play();
         }
+
+        function atualizarCronometro() {
+            let minutos = Math.floor(segundosRestantes / 60);
+            let segundos = segundosRestantes % 60;
+            document.getElementById('cronometro').textContent = 
+                (minutos < 10 ? "0" : "") + minutos + ":" + (segundos < 10 ? "0" : "") + segundos;
+            
+            if (segundosRestantes == aviso1 || segundosRestantes == aviso2) {
+                tocarAviso();
+            }
+            
+            if (segundosRestantes > 0) {
+                segundosRestantes--;
+            } else {
+                clearInterval(intervalo);
+            }
+        }
+
+        function iniciarCronometro() {
+            intervalo = setInterval(atualizarCronometro, 1000);
+        }
+
+        iniciarCronometro();
     </script>
 </body>
 </html>
