@@ -29,12 +29,19 @@ body {
     background: rgba(0, 0, 0, 0.6);
     padding: 20px;
     border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    max-width: 500px;
 }
 
 /* Estilo do cronômetro */
 #cronometro {
-    font-size: 3em;
+    font-size: 5em;
     margin-bottom: 20px;
+    font-family: 'Courier New', Courier, monospace;
 }
 
 /* Botões */
@@ -51,5 +58,52 @@ body {
 }
 
 .botao:hover {
+    background: #e68900;
+}
+
+/* Container de controle */
+.control-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+/* Input para configurar o tempo */
+input[type="number"] {
+    padding: 10px;
+    font-size: 1.2em;
+    border-radius: 5px;
+    border: 1px solid #fff;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    width: 80px;
+}
+
+/* Título de configuração */
+h2, h3 {
+    margin: 10px 0;
+}
+
+/* Estilo para os controles de música */
+.music-controls {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+/* Botão de Música */
+.music-toggle-btn {
+    background: #ff9800;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2em;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+
+.music-toggle-btn:hover {
     background: #e68900;
 }
