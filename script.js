@@ -47,4 +47,23 @@ previewBtn.addEventListener('click', () => {
         const msg = new Audio('voz_pregravada.mp3');
         msg.play();
     }
+
+    let segundos = 0;
+let intervalo;
+
+function atualizarCronometro() {
+    const cronometro = document.getElementById("cronometro");
+    let minutos = Math.floor(segundos / 60);
+    let seg = segundos % 60;
+    cronometro.textContent = 
+        (minutos < 10 ? "0" : "") + minutos + ":" + (seg < 10 ? "0" : "") + seg;
+    segundos++;
+}
+
+function iniciarCronometro() {
+    if (!intervalo) {
+        intervalo = setInterval(atualizarCronometro, 1000);
+    }
+}
+
 });
