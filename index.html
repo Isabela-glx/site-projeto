@@ -1,41 +1,27 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <link rel="stylesheet" href="style.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cronômetro com Avisos</title>
-    <style>
-        /* Estilos básicos para o cronômetro */
-        body { font-family: Arial, sans-serif; text-align: center; }
-        #timer { font-size: 3em; margin: 20px; }
-        #controls { margin: 20px; }
-        button { font-size: 1.2em; padding: 10px 20px; }
-    </style>
+    <title>Cronômetro</title>
+    
+    <!-- Link para o CSS -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Cronômetro com Avisos</h1>
-    <div id="timer">00:00</div>
-    
-    <div id="controls">
-        <button id="startStopBtn">Iniciar</button>
-        <button id="resetBtn">Resetar</button>
-    </div>
 
-    <div>
-        <h2>Escolha a voz para os avisos</h2>
-        <select id="voiceSelect">
-            <option value="system">Voz do Sistema</option>
-            <option value="preRecorded">Voz Pré-gravada</option>
-        </select>
-        <button id="previewBtn">Prévia da Voz</button>
-    </div>
-
+    <!-- Vídeo de fundo -->
     <video class="video-background" autoplay muted loop>
-    <source src="assets/video.mp4" type="video/mp4">
-</video>
+        <source src="assets/video.mp4" type="video/mp4">
+    </video>
 
-    
+    <!-- Container do cronômetro -->
+    <div class="cronometro-container">
+        <h1 id="cronometro">00:00</h1>
+        <button class="botao" onclick="iniciarCronometro()">Iniciar</button>
+    </div>
+
+    <!-- Link para o JavaScript -->
     <script src="script.js"></script>
 </body>
 </html>
