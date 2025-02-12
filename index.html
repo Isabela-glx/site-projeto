@@ -101,22 +101,26 @@
     <div class="timer" id="timer" style="display: none;">30</div>
 
     <script>
+        // Função para iniciar o cronômetro
         function startCountdown() {
             const videoFile = document.getElementById("video").files[0];
             const musicaFile = document.getElementById("musica").files[0];
             const vozTipo = document.getElementById("voz").value;
             const tempo = document.getElementById("tempo").value;
 
+            // Verifica se os campos obrigatórios foram preenchidos
             if (videoFile && musicaFile && tempo) {
+                // Armazena os dados no localStorage
                 localStorage.setItem('video', URL.createObjectURL(videoFile));
                 localStorage.setItem('musica', URL.createObjectURL(musicaFile));
                 localStorage.setItem('voz', vozTipo);
                 localStorage.setItem('tempo', tempo);
 
-                // Exibe a tela de aviso
+                // Esconde a tela de configurações e exibe a tela de avisos
                 document.getElementById("configContainer").style.display = "none";
                 document.getElementById("avisosContainer").style.display = "block";
 
+                // Exibe a mensagem de aviso com voz (se configurada)
                 const avisoMessage = document.getElementById("avisoMessage");
                 const vozTipo = localStorage.getItem('voz');
 
@@ -127,6 +131,7 @@
 
                 avisoMessage.style.opacity = 1;
 
+                // Inicia a contagem após 5 segundos
                 setTimeout(function() {
                     startFinalCountdown();
                 }, 5000); // 5 segundos para os avisos
@@ -135,6 +140,7 @@
             }
         }
 
+        // Função para iniciar a contagem regressiva
         function startFinalCountdown() {
             const video = localStorage.getItem('video');
             const musica = localStorage.getItem('musica');
@@ -142,6 +148,7 @@
             const timerDisplay = document.getElementById("timer");
             const videoElement = document.getElementById("videoBackground");
 
+            // Configura o vídeo de fundo
             videoElement.src = video;
             videoElement.style.display = "block";
 
@@ -149,12 +156,17 @@
             const audio = new Audio(musica);
             audio.play();
 
+            // Inicia a contagem regressiva
             let countdown = tempo;
             timerDisplay.style.display = "block";
 
             const interval = setInterval(function() {
                 if (countdown <= 0) {
                     clearInterval(interval);
+                    timerDisplay.textContent = "Tempo esgotado!";
+                    // Finaliza o áudio após a contagem
+                    audio.pause();
+                    audio.currentTime = 0;
                 } else {
                     timerDisplay.textContent = countdown;
                     countdown--;
