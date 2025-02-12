@@ -1,14 +1,34 @@
-let segundos = 0;
+let params = new URLSearchParams(window.location.search);
+let tempoTotal = params.get('tempo') * 60;
+let segundosRestantes = tempoTotal;
+let aviso1 = params.get('aviso1');
+let aviso2 = params.get('aviso2');
+let musicaSelecionada = params.get('musica');
 let intervalo;
+
 let musica = document.getElementById("musica");
+document.getElementById("musicaSource").src = `assets/${musicaSelecionada}`;
+musica.load();
+
+function tocarAviso() {
+    document.getElementById('avisoSom').play();
+}
 
 function atualizarCronometro() {
-    const cronometro = document.getElementById("cronometro");
-    let minutos = Math.floor(segundos / 60);
-    let seg = segundos % 60;
-    cronometro.textContent = 
-        (minutos < 10 ? "0" : "") + minutos + ":" + (seg < 10 ? "0" : "") + seg;
-    segundos++;
+    let minutos = Math.floor(segundosRestantes / 60);
+    let segundos = segundosRestantes % 60;
+    document.getElementById('cronometro').textContent = 
+        (minutos < 10 ? "0" : "") + minutos + ":" + (segundos < 10 ? "0" : "") + segundos;
+    
+    if (segundosRestantes == aviso1 || segundosRestantes == aviso2) {
+        tocarAviso();
+    }
+    
+    if (segundosRestantes > 0) {
+        segundosRestantes--;
+    } else {
+        clearInterval(intervalo);
+    }
 }
 
 function iniciarCronometro() {
@@ -24,8 +44,8 @@ function pararCronometro() {
 
 function reiniciarCronometro() {
     pararCronometro();
-    segundos = 0;
-    document.getElementById("cronometro").textContent = "00:00";
+    segundosRestantes = tempoTotal;
+    atualizarCronometro();
 }
 
 function toggleMusica() {
@@ -35,3 +55,5 @@ function toggleMusica() {
         musica.pause();
     }
 }
+
+atualizarCronometro();
