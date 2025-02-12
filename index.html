@@ -3,72 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contagem Regressiva</title>
+    <title>Configurações de Cronômetro e Contagem Regressiva</title>
     <style>
-        /* Estilos Gerais */
-        body { text-align: center; font-family: Arial, sans-serif; background-color: #111; color: white; }
-        .hidden { display: none; }
-        
-        /* Estilos da Configuração */
-        #config { margin: 20px; }
-        
-        /* Estilos da Tela de Animação */
-        #animacoes { font-size: 24px; opacity: 0; transition: opacity 1s ease-in-out; }
-        
-        /* Estilos da Contagem Regressiva */
-        #contagem { font-size: 100px; display: none; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f9;
+        }
+        .container {
+            text-align: center;
+            width: 80%;
+            max-width: 500px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input, select {
+            padding: 8px;
+            width: 100%;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #662b04;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #9a4d14;
+        }
+        .message {
+            font-size: 24px;
+            margin-bottom: 20px;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+        #videoBackground {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .timer {
+            font-size: 50px;
+            color: white;
+            z-index: 1;
+        }
     </style>
 </head>
 <body>
-    <!-- SEÇÃO DE CONFIGURAÇÃO -->
-    <div id="config">
-        <h2>Configuração</h2>
-        <label>Tempo (segundos): <input type="number" id="tempo" value="10"></label><br>
-        <label>Mensagem Inicial: <input type="text" id="mensagem"></label><br>
-        <button onclick="iniciarContagem()">Iniciar</button>
-    </div>
-    
-    <!-- SEÇÃO DE ANIMAÇÕES (ANTES DA CONTAGEM) -->
-    <div id="animacoes" class="hidden">
-        <p id="mensagemTexto"></p>
-    </div>
-    
-    <!-- SEÇÃO DE CONTAGEM REGRESSIVA -->
-    <div id="contagem" class="hidden"></div>
-    
-    <script>
-        function iniciarContagem() {
-            let tempo = parseInt(document.getElementById("tempo").value);
-            let mensagem = document.getElementById("mensagem").value;
-            
-            document.getElementById("config").style.display = "none";
-            document.getElementById("animacoes").classList.remove("hidden");
-            document.getElementById("mensagemTexto").innerText = mensagem;
-            
-            setTimeout(() => {
-                document.getElementById("animacoes").style.opacity = "1";
-                setTimeout(() => {
-                    document.getElementById("animacoes").style.opacity = "0";
-                    setTimeout(() => {
-                        document.getElementById("animacoes").classList.add("hidden");
-                        document.getElementById("contagem").classList.remove("hidden");
-                        iniciarRegressiva(tempo);
-                    }, 1000);
-                }, 3000);
-            }, 500);
-        }
+    <div class="container" id="configContainer">
+        <h1>Configurações de Cronômetro</h1>
+        <label for="video">Escolha o vídeo de fundo:</label>
+        <input type="file" id="video" accept="video/*">
         
-        function iniciarRegressiva(tempo) {
-            let contador = document.getElementById("contagem");
-            contador.innerText = tempo;
-            
-            let intervalo = setInterval(() => {
-                tempo--;
-                contador.innerText = tempo;
-                
-                if (tempo <= 0) {
-                    clearInterval(intervalo);
-                    contador.innerText = "FIM!";
+        <label for="musica">Escolha a música:</label>
+        <input type="file" id="musica" accept="audio/*">
+        
+        <label for="voz">Escolha o tipo de voz:</label>
+        <select id="voz">
+            <option value="sistema">Sistema (Google/Siri)</option>
+            <option value="pre-gravada">Voz Pré-Gravada</option>
+        </select>
+        
+        <label for="tempo">Tempo da contagem (em segundos):</label>
+        <input type="number" id="tempo" min="1" value="30">
+        
+        <button onclick="startCountdown()">Iniciar Cronômetro</button>
+    </div>
+
+    <div class="container" id="avisosContainer" style="display: none;">
+        <div class="message" id="avisoMessage">Preparando para a contagem...</div>
+        <button onclick="startFinalCountdown()">Iniciar Contagem</button>
+    </div>
+
+    <video id="videoBackground" autoplay loop muted style="display: none;"></video>
+    <div class="timer" id="timer" style="display: none;">30</div>
+
+    <script>
+        function startCountdown() {
+            const videoFile = document.getElementById("video").files[0];
+            const musicaFile = document.getElementById("musica").files[0];
+            const vozTipo = document.getElementById("voz").value;
+            const tempo = document.getElementById("tempo").value;
+
+            if (videoFile && musicaFile && tempo) {
+                localStorage.setItem('video', URL.createObjectURL(videoFile));
+                localStorage.setItem('musica', URL.createObjectURL(musicaFile));
+                localStorage.setItem('voz', vozTipo);
+                localStorage.setItem('tempo', tempo);
+
+                // Exibe a tela de aviso
+                document.getElementById("configContainer").style.display = "none";
+                document.getElementById("avisosContainer").style.display = "block";
+
+                const avisoMessage = document.getElementById("avisoMessage");
+                const vozTipo = localStorage.getItem('voz');
+
+                if (vozTipo === 'sistema') {
+                    const msg = new SpeechSynthesisUtterance("Preparando para a contagem");
+                    speechSynthesis.speak(msg);
+                }
+
+                avisoMessage.style.opacity = 1;
+
+                setTimeout(function() {
+                    startFinalCountdown();
+                }, 5000); // 5 segundos para os avisos
+            } else {
+                alert('Por favor, preencha todos os campos!');
+            }
+        }
+
+        function startFinalCountdown() {
+            const video = localStorage.getItem('video');
+            const musica = localStorage.getItem('musica');
+            const tempo = parseInt(localStorage.getItem('tempo'));
+            const timerDisplay = document.getElementById("timer");
+            const videoElement = document.getElementById("videoBackground");
+
+            videoElement.src = video;
+            videoElement.style.display = "block";
+
+            // Reproduz a música
+            const audio = new Audio(musica);
+            audio.play();
+
+            let countdown = tempo;
+            timerDisplay.style.display = "block";
+
+            const interval = setInterval(function() {
+                if (countdown <= 0) {
+                    clearInterval(interval);
+                } else {
+                    timerDisplay.textContent = countdown;
+                    countdown--;
                 }
             }, 1000);
         }
