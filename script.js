@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
             // Exibe a tela de aviso e esconde a tela de configuração
             document.getElementById("configContainer").style.display = "none";
-            document.getElementById("avisosContainer").style.display = "block";
+            document.getElementById("avisosContainer").style.display = "block";  // Exibe a tela de aviso
 
             // Exibe a mensagem de aviso com voz, se configurada
             const avisoMessage = document.getElementById("avisoMessage");
