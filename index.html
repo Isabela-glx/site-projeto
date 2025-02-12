@@ -17,7 +17,14 @@
         <input type="number" id="aviso1" min="0" value="10">
         <label for="aviso2">Aviso intermediário (segundos):</label>
         <input type="number" id="aviso2" min="0" value="30">
-        
+
+        <h3>Configurar Música</h3>
+        <label for="musica">Escolher música:</label>
+        <select id="musica">
+            <option value="musica1.mp3">Música 1</option>
+            <option value="musica2.mp3">Música 2</option>
+        </select>
+
         <button onclick="abrirCronometro()">Iniciar</button>
     </div>
 
@@ -26,7 +33,8 @@
             let tempo = document.getElementById('tempo').value;
             let aviso1 = document.getElementById('aviso1').value;
             let aviso2 = document.getElementById('aviso2').value;
-            window.open(`cronometro.html?tempo=${tempo}&aviso1=${aviso1}&aviso2=${aviso2}`, '_blank', 'width=800,height=600');
+            let musica = document.getElementById('musica').value;
+            window.open(`cronometro.html?tempo=${tempo}&aviso1=${aviso1}&aviso2=${aviso2}&musica=${musica}`, '_blank', 'width=800,height=600');
         }
     </script>
 </body>
