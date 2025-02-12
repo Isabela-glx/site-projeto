@@ -18,19 +18,6 @@
         <label for="aviso2">Aviso intermediário (segundos):</label>
         <input type="number" id="aviso2" min="0" value="30">
         
-        <h3>Configurar Mídia</h3>
-        <label for="video">Selecionar vídeo de fundo:</label>
-        <input type="file" id="video" accept="video/*">
-        <br>
-        <label for="musica">Selecionar música de fundo:</label>
-        <input type="file" id="musicaInput" accept="audio/*">
-        
-        <h3>Configurar Narração</h3>
-        <label for="voz">Escolher tipo de voz:</label>
-        <select id="voz">
-            <option value="sistema">Voz do Sistema</option>
-            <option value="personalizada">Voz Pré-Gravada</option>
-        </select>
         <button onclick="abrirCronometro()">Iniciar</button>
     </div>
 
@@ -39,24 +26,7 @@
             let tempo = document.getElementById('tempo').value;
             let aviso1 = document.getElementById('aviso1').value;
             let aviso2 = document.getElementById('aviso2').value;
-            let voz = document.getElementById('voz').value;
-            
-            let videoFile = document.getElementById('video').files[0];
-            let musicaFile = document.getElementById('musicaInput').files[0];
-            
-            let params = `tempo=${tempo}&aviso1=${aviso1}&aviso2=${aviso2}&voz=${voz}`;
-            
-            if (videoFile) {
-                let videoURL = URL.createObjectURL(videoFile);
-                params += `&video=${encodeURIComponent(videoURL)}`;
-            }
-            
-            if (musicaFile) {
-                let musicaURL = URL.createObjectURL(musicaFile);
-                params += `&musica=${encodeURIComponent(musicaURL)}`;
-            }
-            
-            window.open(`cronometro.html?${params}`, '_blank', 'width=800,height=600');
+            window.open(`cronometro.html?tempo=${tempo}&aviso1=${aviso1}&aviso2=${aviso2}`, '_blank', 'width=800,height=600');
         }
     </script>
 </body>
