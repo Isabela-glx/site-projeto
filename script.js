@@ -54,6 +54,18 @@ function toggleMusica() {
     } else {
         musica.pause();
     }
+    
+function abrirCronometro() {
+    let tempo = document.getElementById('tempo').value;
+    let aviso1 = document.getElementById('aviso1').value;
+    let aviso2 = document.getElementById('aviso2').value;
+    let musica = document.getElementById('musica').value;
+    let video = document.getElementById('video').value;
+    
+    let url = `cronometro.html?tempo=${tempo}&aviso1=${aviso1}&aviso2=${aviso2}&musica=${musica}&video=${video}`;
+    window.open(url, '_blank', 'width=800,height=600');
+}
+
 }
 
 atualizarCronometro();
