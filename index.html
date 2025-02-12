@@ -14,6 +14,7 @@
             align-items: center;
             height: 100vh;
             background-color: #f4f4f9;
+            overflow: hidden; /* Impede que a barra de rolagem apareça ao exibir o vídeo de fundo */
         }
         .container {
             text-align: center;
@@ -23,20 +24,28 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 10; /* Garante que a janela de configuração fique acima do vídeo */
         }
         h1 {
             margin-bottom: 20px;
+            font-size: 24px;
+            color: #662b04;
         }
         label {
             display: block;
             margin: 10px 0 5px;
+            font-size: 16px;
+            color: #333;
         }
         input, select {
-            padding: 8px;
+            padding: 10px;
             width: 100%;
             margin-bottom: 15px;
             border: 1px solid #ddd;
             border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box; /* Para incluir o padding no cálculo da largura */
         }
         button {
             background-color: #662b04;
@@ -45,7 +54,9 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            font-size: 16px;
             transition: background-color 0.3s;
+            width: 100%; /* Botão ocupa toda a largura da tela */
         }
         button:hover {
             background-color: #9a4d14;
@@ -55,6 +66,7 @@
             margin-bottom: 20px;
             opacity: 0;
             transition: opacity 1s ease-in-out;
+            color: #333;
         }
         #videoBackground {
             position: absolute;
@@ -62,12 +74,30 @@
             left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: cover; /* Faz o vídeo cobrir toda a área sem distorcer */
+            z-index: -1; /* Garante que o vídeo fique no fundo */
+            display: none; /* Inicialmente escondido */
         }
         .timer {
             font-size: 50px;
             color: white;
-            z-index: 1;
+            z-index: 1; /* Garante que o cronômetro fique sobre o vídeo */
+            display: none; /* Inicialmente escondido */
+        }
+        @media (max-width: 600px) {
+            .container {
+                width: 95%;
+                padding: 15px;
+            }
+            h1 {
+                font-size: 20px;
+            }
+            input, select, button {
+                font-size: 14px;
+            }
+            .timer {
+                font-size: 40px;
+            }
         }
     </style>
 </head>
@@ -89,90 +119,89 @@
         <label for="tempo">Tempo da contagem (em segundos):</label>
         <input type="number" id="tempo" min="1" value="30">
         
-        <button onclick="startCountdown()">Iniciar Cronômetro</button>
+        <button id="startButton">Iniciar Cronômetro</button>
     </div>
 
     <div class="container" id="avisosContainer" style="display: none;">
         <div class="message" id="avisoMessage">Preparando para a contagem...</div>
-        <button onclick="startFinalCountdown()">Iniciar Contagem</button>
     </div>
 
     <video id="videoBackground" autoplay loop muted style="display: none;"></video>
     <div class="timer" id="timer" style="display: none;">30</div>
 
     <script>
-        // Função para iniciar o cronômetro
-        function startCountdown() {
-            const videoFile = document.getElementById("video").files[0];
-            const musicaFile = document.getElementById("musica").files[0];
-            const vozTipo = document.getElementById("voz").value;
-            const tempo = document.getElementById("tempo").value;
+        document.addEventListener("DOMContentLoaded", function() {
+            // Função para iniciar o cronômetro
+            document.getElementById("startButton").onclick = function() {
+                const videoFile = document.getElementById("video").files[0];
+                const musicaFile = document.getElementById("musica").files[0];
+                const vozTipo = document.getElementById("voz").value;
+                const tempo = document.getElementById("tempo").value;
 
-            // Verifica se os campos obrigatórios foram preenchidos
-            if (videoFile && musicaFile && tempo) {
-                // Armazena os dados no localStorage
-                localStorage.setItem('video', URL.createObjectURL(videoFile));
-                localStorage.setItem('musica', URL.createObjectURL(musicaFile));
-                localStorage.setItem('voz', vozTipo);
-                localStorage.setItem('tempo', tempo);
+                // Verifica se os campos obrigatórios foram preenchidos
+                if (videoFile && musicaFile && tempo) {
+                    // Armazena os dados no localStorage
+                    localStorage.setItem('video', URL.createObjectURL(videoFile));
+                    localStorage.setItem('musica', URL.createObjectURL(musicaFile));
+                    localStorage.setItem('voz', vozTipo);
+                    localStorage.setItem('tempo', tempo);
 
-                // Esconde a tela de configurações e exibe a tela de avisos
-                document.getElementById("configContainer").style.display = "none";
-                document.getElementById("avisosContainer").style.display = "block";
+                    // Esconde a tela de configurações e exibe a tela de avisos
+                    document.getElementById("configContainer").style.display = "none";
+                    document.getElementById("avisosContainer").style.display = "block";
 
-                // Exibe a mensagem de aviso com voz (se configurada)
-                const avisoMessage = document.getElementById("avisoMessage");
-                const vozTipo = localStorage.getItem('voz');
+                    // Exibe a mensagem de aviso com voz (se configurada)
+                    const avisoMessage = document.getElementById("avisoMessage");
+                    if (vozTipo === 'sistema') {
+                        const msg = new SpeechSynthesisUtterance("Preparando para a contagem");
+                        speechSynthesis.speak(msg);
+                    }
 
-                if (vozTipo === 'sistema') {
-                    const msg = new SpeechSynthesisUtterance("Preparando para a contagem");
-                    speechSynthesis.speak(msg);
-                }
+                    avisoMessage.style.opacity = 1;
 
-                avisoMessage.style.opacity = 1;
-
-                // Inicia a contagem após 5 segundos
-                setTimeout(function() {
-                    startFinalCountdown();
-                }, 5000); // 5 segundos para os avisos
-            } else {
-                alert('Por favor, preencha todos os campos!');
-            }
-        }
-
-        // Função para iniciar a contagem regressiva
-        function startFinalCountdown() {
-            const video = localStorage.getItem('video');
-            const musica = localStorage.getItem('musica');
-            const tempo = parseInt(localStorage.getItem('tempo'));
-            const timerDisplay = document.getElementById("timer");
-            const videoElement = document.getElementById("videoBackground");
-
-            // Configura o vídeo de fundo
-            videoElement.src = video;
-            videoElement.style.display = "block";
-
-            // Reproduz a música
-            const audio = new Audio(musica);
-            audio.play();
-
-            // Inicia a contagem regressiva
-            let countdown = tempo;
-            timerDisplay.style.display = "block";
-
-            const interval = setInterval(function() {
-                if (countdown <= 0) {
-                    clearInterval(interval);
-                    timerDisplay.textContent = "Tempo esgotado!";
-                    // Finaliza o áudio após a contagem
-                    audio.pause();
-                    audio.currentTime = 0;
+                    // Inicia a contagem após 5 segundos
+                    setTimeout(function() {
+                        startFinalCountdown();
+                    }, 5000); // 5 segundos para os avisos
                 } else {
-                    timerDisplay.textContent = countdown;
-                    countdown--;
+                    alert('Por favor, preencha todos os campos!');
                 }
-            }, 1000);
-        }
+            };
+
+            // Função para iniciar a contagem regressiva
+            function startFinalCountdown() {
+                const video = localStorage.getItem('video');
+                const musica = localStorage.getItem('musica');
+                const tempo = parseInt(localStorage.getItem('tempo'));
+                const timerDisplay = document.getElementById("timer");
+                const videoElement = document.getElementById("videoBackground");
+
+                // Configura o vídeo de fundo
+                videoElement.src = video;
+                videoElement.style.display = "block";
+
+                // Reproduz a música
+                const audio = new Audio(musica);
+                audio.play();
+
+                // Inicia a contagem regressiva
+                let countdown = tempo;
+                timerDisplay.style.display = "block";
+
+                const interval = setInterval(function() {
+                    if (countdown <= 0) {
+                        clearInterval(interval);
+                        timerDisplay.textContent = "Tempo esgotado!";
+                        // Finaliza o áudio após a contagem
+                        audio.pause();
+                        audio.currentTime = 0;
+                    } else {
+                        timerDisplay.textContent = countdown;
+                        countdown--;
+                    }
+                }, 1000);
+            }
+        });
     </script>
 </body>
 </html>
