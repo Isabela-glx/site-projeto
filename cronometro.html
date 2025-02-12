@@ -1,94 +1,87 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cronômetro</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Avisos antes da Contagem</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f9;
+        }
+        .container {
+            text-align: center;
+            width: 80%;
+            max-width: 500px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: none; /* Esconde a tela inicialmente */
+        }
+        .message {
+            font-size: 24px;
+            margin-bottom: 20px;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+        button {
+            background-color: #662b04;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-    <video class="video-background" autoplay muted loop>
-        <source src="assets/video.mp4" type="video/mp4">
-    </video>
-    
-    <audio id="musica" loop>
-        <source id="musicaSource" type="audio/mpeg">
-    </audio>
-    
-    <audio id="avisoSom">
-        <source src="assets/aviso.mp3" type="audio/mpeg">
-    </audio>
-
-    <div class="cronometro-container">
-        <h1 id="cronometro">00:00</h1>
-        <div class="control-container">
-            <button class="botao" onclick="iniciarCronometro()">Iniciar</button>
-            <button class="botao" onclick="pararCronometro()">Parar</button>
-            <button class="botao" onclick="reiniciarCronometro()">Reiniciar</button>
-            <button class="botao" onclick="toggleMusica()">Música</button>
-        </div>
+    <div class="container" id="avisosContainer">
+        <div class="message" id="avisoMessage">Preparando para a contagem...</div>
+        <button onclick="startCountdown()">Iniciar Contagem</button>
     </div>
 
     <script>
-        let params = new URLSearchParams(window.location.search);
-        let tempoTotal = params.get('tempo') * 60;
-        let segundosRestantes = tempoTotal;
-        let aviso1 = params.get('aviso1');
-        let aviso2 = params.get('aviso2');
-        let musicaSelecionada = params.get('musica');
-        let intervalo;
+        const avisoMessage = document.getElementById("avisoMessage");
+        const avisosContainer = document.getElementById("avisosContainer");
 
-        let musica = document.getElementById("musica");
-        document.getElementById("musicaSource").src = `assets/${musicaSelecionada}`;
-        musica.load();
+        window.onload = function() {
+            // Recupera as configurações do LocalStorage
+            const video = localStorage.getItem('video');
+            const musica = localStorage.getItem('musica');
+            const vozTipo = localStorage.getItem('voz');
+            const tempo = localStorage.getItem('tempo');
 
-        function tocarAviso() {
-            document.getElementById('avisoSom').play();
-        }
+            // Exibe o vídeo e música
+            const videoElement = document.createElement("video");
+            videoElement.src = video;
+            videoElement.loop = true;
+            videoElement.autoplay = true;
+            document.body.appendChild(videoElement);
 
-        function atualizarCronometro() {
-            let minutos = Math.floor(segundosRestantes / 60);
-            let segundos = segundosRestantes % 60;
-            document.getElementById('cronometro').textContent = 
-                (minutos < 10 ? "0" : "") + minutos + ":" + (segundos < 10 ? "0" : "") + segundos;
-            
-            if (segundosRestantes == aviso1 || segundosRestantes == aviso2) {
-                tocarAviso();
+            if (vozTipo === 'sistema') {
+                const msg = new SpeechSynthesisUtterance("Preparando para a contagem");
+                speechSynthesis.speak(msg);
             }
-            
-            if (segundosRestantes > 0) {
-                segundosRestantes--;
-            } else {
-                clearInterval(intervalo);
-            }
-        }
 
-        function iniciarCronometro() {
-            if (!intervalo) {
-                intervalo = setInterval(atualizarCronometro, 1000);
-            }
-        }
+            avisosContainer.style.display = "block";
+            avisoMessage.style.opacity = 1;
 
-        function pararCronometro() {
-            clearInterval(intervalo);
-            intervalo = null;
-        }
+            setTimeout(function() {
+                // Transição para a tela de contagem após os avisos
+                window.location.href = "contagem.html";
+            }, 5000); // 5 segundos para os avisos
+        };
 
-        function reiniciarCronometro() {
-            pararCronometro();
-            segundosRestantes = tempoTotal;
-            atualizarCronometro();
+        function startCountdown() {
+            window.location.href = "contagem.html"; // Muda para a página da contagem regressiva
         }
-
-        function toggleMusica() {
-            if (musica.paused) {
-                musica.play();
-            } else {
-                musica.pause();
-            }
-        }
-
-        atualizarCronometro();
     </script>
 </body>
 </html>
