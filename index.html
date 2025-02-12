@@ -14,7 +14,7 @@
             align-items: center;
             height: 100vh;
             background-color: #f4f4f9;
-            overflow: hidden; /* Impede que a barra de rolagem apareça ao exibir o vídeo de fundo */
+            overflow: hidden;
         }
         .container {
             text-align: center;
@@ -25,7 +25,7 @@
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             position: relative;
-            z-index: 10; /* Garante que a janela de configuração fique acima do vídeo */
+            z-index: 10;
         }
         h1 {
             margin-bottom: 20px;
@@ -45,7 +45,7 @@
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 16px;
-            box-sizing: border-box; /* Para incluir o padding no cálculo da largura */
+            box-sizing: border-box;
         }
         button {
             background-color: #662b04;
@@ -56,7 +56,7 @@
             cursor: pointer;
             font-size: 16px;
             transition: background-color 0.3s;
-            width: 100%; /* Botão ocupa toda a largura da tela */
+            width: 100%;
         }
         button:hover {
             background-color: #9a4d14;
@@ -74,15 +74,15 @@
             left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Faz o vídeo cobrir toda a área sem distorcer */
-            z-index: -1; /* Garante que o vídeo fique no fundo */
-            display: none; /* Inicialmente escondido */
+            object-fit: cover;
+            z-index: -1;
+            display: none;
         }
         .timer {
             font-size: 50px;
             color: white;
-            z-index: 1; /* Garante que o cronômetro fique sobre o vídeo */
-            display: none; /* Inicialmente escondido */
+            z-index: 1;
+            display: none;
             text-align: center;
         }
         #timerContainer {
@@ -143,59 +143,59 @@
     <div class="timer" id="timer" style="display: none;"></div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Função para iniciar o cronômetro
-            document.getElementById("startButton").onclick = function() {
-                const videoFile = document.getElementById("video").files[0];
-                const musicaFile = document.getElementById("musica").files[0];
-                const vozTipo = document.getElementById("voz").value;
-                const tempo = document.getElementById("tempo").value;
+        const AVISO_DURATION = 5000;
 
-                // Verifica se os campos obrigatórios foram preenchidos
-                if (videoFile && musicaFile && tempo) {
-                    // Armazena os dados no localStorage
-                    localStorage.setItem('video', URL.createObjectURL(videoFile));
-                    localStorage.setItem('musica', URL.createObjectURL(musicaFile));
-                    localStorage.setItem('voz', vozTipo);
-                    localStorage.setItem('tempo', tempo);
+        document.addEventListener("DOMContentLoaded", () => {
+            const startButton = document.getElementById("startButton");
 
-                    // Esconde a tela de configurações e exibe a tela de avisos
-                    document.getElementById("configContainer").style.display = "none";
-                    document.getElementById("avisosContainer").style.display = "block";
+            startButton.onclick = async () => {
+                try {
+                    const videoFile = document.getElementById("video").files[0];
+                    const musicaFile = document.getElementById("musica").files[0];
+                    const vozTipo = document.getElementById("voz").value;
+                    const durationInSeconds = parseInt(document.getElementById("tempo").value);
 
-                    // Exibe a mensagem de aviso com voz (se configurada)
-                    const avisoMessage = document.getElementById("avisoMessage");
-                    if (vozTipo === 'sistema') {
-                        const msg = new SpeechSynthesisUtterance("Preparando para a contagem");
-                        speechSynthesis.speak(msg);
-                    }
+                    if (videoFile && musicaFile && durationInSeconds) {
+                        localStorage.setItem('video', URL.createObjectURL(videoFile));
+                        localStorage.setItem('musica', URL.createObjectURL(musicaFile));
+                        localStorage.setItem('voz', vozTipo);
+                        localStorage.setItem('tempo', durationInSeconds);
 
-                    avisoMessage.style.opacity = 1;
+                        document.getElementById("configContainer").style.display = "none";
+                        document.getElementById("avisosContainer").style.display = "block";
 
-                    // Inicia a contagem após 5 segundos
-                    setTimeout(function() {
+                        const avisoMessage = document.getElementById("avisoMessage");
+                        if (vozTipo === 'sistema') {
+                            const msg = new SpeechSynthesisUtterance("Preparando para a contagem");
+                            speechSynthesis.speak(msg);
+                        }
+
+                        avisoMessage.style.opacity = 1;
+
+                        await new Promise(resolve => setTimeout(resolve, AVISO_DURATION));
                         openCountdownWindow();
-                    }, 5000); // 5 segundos para os avisos
-                } else {
-                    alert('Por favor, preencha todos os campos!');
+                    } else {
+                        alert('Por favor, preencha todos os campos!');
+                    }
+                } catch (error) {
+                    console.error(error);
                 }
             };
 
-            // Função para abrir nova janela e iniciar a contagem regressiva
-            function openCountdownWindow() {
-                const tempo = parseInt(localStorage.getItem('tempo'));
+            async function openCountdownWindow() {
+                const durationInSeconds = parseInt(localStorage.getItem('tempo'));
                 const timerContainer = document.createElement("div");
                 timerContainer.id = "timerContainer";
                 document.body.appendChild(timerContainer);
-                
+
                 const timerDisplay = document.createElement("div");
                 timerDisplay.classList.add("timer");
                 timerContainer.appendChild(timerDisplay);
 
-                let countdown = tempo;
+                let countdown = durationInSeconds;
                 timerDisplay.innerHTML = formatTime(countdown);
 
-                const interval = setInterval(function() {
+                const interval = setInterval(() => {
                     if (countdown <= 0) {
                         clearInterval(interval);
                         timerDisplay.innerHTML = "O culto vai começar!";
@@ -206,14 +206,12 @@
                 }, 1000);
             }
 
-            // Função para formatar o tempo no formato MM:SS
             function formatTime(seconds) {
                 const minutes = Math.floor(seconds / 60);
                 const remainingSeconds = seconds % 60;
                 return `${padZero(minutes)}:${padZero(remainingSeconds)}`;
             }
 
-            // Função para adicionar zero à frente de números menores que 10
             function padZero(number) {
                 return number < 10 ? "0" + number : number;
             }
