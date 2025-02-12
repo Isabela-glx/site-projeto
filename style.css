@@ -80,11 +80,6 @@ input[type="number"] {
     width: 80px;
 }
 
-/* Título de configuração */
-h2, h3 {
-    margin: 10px 0;
-}
-
 /* Estilo para os controles de música */
 .music-controls {
     display: flex;
