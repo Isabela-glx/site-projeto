@@ -1,71 +1,43 @@
-let params = new URLSearchParams(window.location.search);
-let tempoTotal = params.get('tempo') * 60;
-let segundosRestantes = tempoTotal;
-let aviso1 = params.get('aviso1');
-let aviso2 = params.get('aviso2');
-let musicaSelecionada = params.get('musica');
-let intervalo;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-let musica = document.getElementById("musica");
-document.getElementById("musicaSource").src = `assets/${musicaSelecionada}`;
-musica.load();
+public class Cronometro extends JFrame {
+    private int tempo;
+    private JLabel contador;
+    private Timer timer;
 
-function tocarAviso() {
-    document.getElementById('avisoSom').play();
-}
+    public Cronometro(int segundos) {
+        this.tempo = segundos;
+        setTitle("Contagem Regressiva");
+        setSize(400, 300);
+        setLayout(new BorderLayout());
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-function atualizarCronometro() {
-    let minutos = Math.floor(segundosRestantes / 60);
-    let segundos = segundosRestantes % 60;
-    document.getElementById('cronometro').textContent = 
-        (minutos < 10 ? "0" : "") + minutos + ":" + (segundos < 10 ? "0" : "") + segundos;
-    
-    if (segundosRestantes == aviso1 || segundosRestantes == aviso2) {
-        tocarAviso();
+        contador = new JLabel(String.valueOf(tempo), SwingConstants.CENTER);
+        contador.setFont(new Font("Arial", Font.BOLD, 80));
+        add(contador, BorderLayout.CENTER);
+
+        timer = new Timer(1000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                tempo--;
+                contador.setText(String.valueOf(tempo));
+                if (tempo <= 0) {
+                    timer.stop();
+                    contador.setText("FIM!");
+                }
+            }
+        });
+
+        setVisible(true);
+        timer.start();
     }
-    
-    if (segundosRestantes > 0) {
-        segundosRestantes--;
-    } else {
-        clearInterval(intervalo);
+
+    public static void main(String[] args) {
+        String input = JOptionPane.showInputDialog("Digite o tempo em segundos:");
+        int segundos = Integer.parseInt(input);
+        new Cronometro(segundos);
     }
 }
-
-function iniciarCronometro() {
-    if (!intervalo) {
-        intervalo = setInterval(atualizarCronometro, 1000);
-    }
-}
-
-function pararCronometro() {
-    clearInterval(intervalo);
-    intervalo = null;
-}
-
-function reiniciarCronometro() {
-    pararCronometro();
-    segundosRestantes = tempoTotal;
-    atualizarCronometro();
-}
-
-function toggleMusica() {
-    if (musica.paused) {
-        musica.play();
-    } else {
-        musica.pause();
-    }
-    
-function abrirCronometro() {
-    let tempo = document.getElementById('tempo').value;
-    let aviso1 = document.getElementById('aviso1').value;
-    let aviso2 = document.getElementById('aviso2').value;
-    let musica = document.getElementById('musica').value;
-    let video = document.getElementById('video').value;
-    
-    let url = `cronometro.html?tempo=${tempo}&aviso1=${aviso1}&aviso2=${aviso2}&musica=${musica}&video=${video}`;
-    window.open(url, '_blank', 'width=800,height=600');
-}
-
-}
-
-atualizarCronometro();
