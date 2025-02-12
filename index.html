@@ -83,6 +83,19 @@
             color: white;
             z-index: 1; /* Garante que o cronômetro fique sobre o vídeo */
             display: none; /* Inicialmente escondido */
+            text-align: center;
+        }
+        #timerContainer {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: transparent;
+        }
+        .timer span {
+            font-size: 60px;
+            font-weight: bold;
         }
         @media (max-width: 600px) {
             .container {
@@ -127,7 +140,7 @@
     </div>
 
     <video id="videoBackground" autoplay loop muted style="display: none;"></video>
-    <div class="timer" id="timer" style="display: none;">30</div>
+    <div class="timer" id="timer" style="display: none;"></div>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -161,45 +174,48 @@
 
                     // Inicia a contagem após 5 segundos
                     setTimeout(function() {
-                        startFinalCountdown();
+                        openCountdownWindow();
                     }, 5000); // 5 segundos para os avisos
                 } else {
                     alert('Por favor, preencha todos os campos!');
                 }
             };
 
-            // Função para iniciar a contagem regressiva
-            function startFinalCountdown() {
-                const video = localStorage.getItem('video');
-                const musica = localStorage.getItem('musica');
+            // Função para abrir nova janela e iniciar a contagem regressiva
+            function openCountdownWindow() {
                 const tempo = parseInt(localStorage.getItem('tempo'));
-                const timerDisplay = document.getElementById("timer");
-                const videoElement = document.getElementById("videoBackground");
+                const timerContainer = document.createElement("div");
+                timerContainer.id = "timerContainer";
+                document.body.appendChild(timerContainer);
+                
+                const timerDisplay = document.createElement("div");
+                timerDisplay.classList.add("timer");
+                timerContainer.appendChild(timerDisplay);
 
-                // Configura o vídeo de fundo
-                videoElement.src = video;
-                videoElement.style.display = "block";
-
-                // Reproduz a música
-                const audio = new Audio(musica);
-                audio.play();
-
-                // Inicia a contagem regressiva
                 let countdown = tempo;
-                timerDisplay.style.display = "block";
+                timerDisplay.innerHTML = formatTime(countdown);
 
                 const interval = setInterval(function() {
                     if (countdown <= 0) {
                         clearInterval(interval);
-                        timerDisplay.textContent = "Tempo esgotado!";
-                        // Finaliza o áudio após a contagem
-                        audio.pause();
-                        audio.currentTime = 0;
+                        timerDisplay.innerHTML = "O culto vai começar!";
                     } else {
-                        timerDisplay.textContent = countdown;
+                        timerDisplay.innerHTML = formatTime(countdown);
                         countdown--;
                     }
                 }, 1000);
+            }
+
+            // Função para formatar o tempo no formato MM:SS
+            function formatTime(seconds) {
+                const minutes = Math.floor(seconds / 60);
+                const remainingSeconds = seconds % 60;
+                return `${padZero(minutes)}:${padZero(remainingSeconds)}`;
+            }
+
+            // Função para adicionar zero à frente de números menores que 10
+            function padZero(number) {
+                return number < 10 ? "0" + number : number;
             }
         });
     </script>
