@@ -10,14 +10,23 @@
     <video class="video-background" autoplay muted loop>
         <source src="assets/video.mp4" type="video/mp4">
     </video>
+    
     <audio id="musica" loop>
-        <source src="assets/musica.mp3" type="audio/mpeg">
+        <source id="musicaSource" type="audio/mpeg">
     </audio>
+    
     <audio id="avisoSom">
         <source src="assets/aviso.mp3" type="audio/mpeg">
     </audio>
+
     <div class="cronometro-container">
         <h1 id="cronometro">00:00</h1>
+        <div class="control-container">
+            <button class="botao" onclick="iniciarCronometro()">Iniciar</button>
+            <button class="botao" onclick="pararCronometro()">Parar</button>
+            <button class="botao" onclick="reiniciarCronometro()">Reiniciar</button>
+            <button class="botao" onclick="toggleMusica()">Música</button>
+        </div>
     </div>
 
     <script>
@@ -26,7 +35,12 @@
         let segundosRestantes = tempoTotal;
         let aviso1 = params.get('aviso1');
         let aviso2 = params.get('aviso2');
+        let musicaSelecionada = params.get('musica');
         let intervalo;
+
+        let musica = document.getElementById("musica");
+        document.getElementById("musicaSource").src = `assets/${musicaSelecionada}`;
+        musica.load();
 
         function tocarAviso() {
             document.getElementById('avisoSom').play();
@@ -50,10 +64,31 @@
         }
 
         function iniciarCronometro() {
-            intervalo = setInterval(atualizarCronometro, 1000);
+            if (!intervalo) {
+                intervalo = setInterval(atualizarCronometro, 1000);
+            }
         }
 
-        iniciarCronometro();
+        function pararCronometro() {
+            clearInterval(intervalo);
+            intervalo = null;
+        }
+
+        function reiniciarCronometro() {
+            pararCronometro();
+            segundosRestantes = tempoTotal;
+            atualizarCronometro();
+        }
+
+        function toggleMusica() {
+            if (musica.paused) {
+                musica.play();
+            } else {
+                musica.pause();
+            }
+        }
+
+        atualizarCronometro();
     </script>
 </body>
 </html>
