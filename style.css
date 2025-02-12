@@ -1,104 +1,107 @@
-/* Estilos gerais */
 body {
+    font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.7);
-    font-family: Arial, sans-serif;
-    color: white;
-    text-align: center;
+    background-color: #f4f4f9;
+    overflow: hidden; /* Impede que a barra de rolagem apareça ao exibir o vídeo de fundo */
 }
 
-/* Estilo do vídeo de fundo */
-.video-background {
-    position: fixed;
+.container {
+    text-align: center;
+    width: 80%;
+    max-width: 500px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 10; /* Garante que a janela de configuração fique acima do vídeo */
+}
+
+h1 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #662b04;
+}
+
+label {
+    display: block;
+    margin: 10px 0 5px;
+    font-size: 16px;
+    color: #333;
+}
+
+input, select {
+    padding: 10px;
+    width: 100%;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    box-sizing: border-box; /* Para incluir o padding no cálculo da largura */
+}
+
+button {
+    background-color: #662b04;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    width: 100%; /* Botão ocupa toda a largura da tela */
+}
+
+button:hover {
+    background-color: #9a4d14;
+}
+
+.message {
+    font-size: 24px;
+    margin-bottom: 20px;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+    color: #333;
+}
+
+#videoBackground {
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    z-index: -1;
+    object-fit: cover; /* Faz o vídeo cobrir toda a área sem distorcer */
+    z-index: -1; /* Garante que o vídeo fique no fundo */
+    display: none; /* Inicialmente escondido */
 }
 
-/* Container do cronômetro */
-.cronometro-container {
-    position: relative;
-    background: rgba(0, 0, 0, 0.6);
-    padding: 20px;
-    border-radius: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    width: 100%;
-    max-width: 500px;
-}
-
-/* Estilo do cronômetro */
-#cronometro {
-    font-size: 5em;
-    margin-bottom: 20px;
-    font-family: 'Courier New', Courier, monospace;
-}
-
-/* Botões */
-.botao {
-    background: #ff9800;
+.timer {
+    font-size: 50px;
     color: white;
-    border: none;
-    padding: 10px 20px;
-    margin: 5px;
-    cursor: pointer;
-    border-radius: 5px;
-    font-size: 1.2em;
-    transition: 0.3s;
+    z-index: 1; /* Garante que o cronômetro fique sobre o vídeo */
+    display: none; /* Inicialmente escondido */
 }
 
-.botao:hover {
-    background: #e68900;
-}
+@media (max-width: 600px) {
+    .container {
+        width: 95%;
+        padding: 15px;
+    }
+    
+    h1 {
+        font-size: 20px;
+    }
 
-/* Container de controle */
-.control-container {
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-}
+    input, select, button {
+        font-size: 14px;
+    }
 
-/* Input para configurar o tempo */
-input[type="number"] {
-    padding: 10px;
-    font-size: 1.2em;
-    border-radius: 5px;
-    border: 1px solid #fff;
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    width: 80px;
-}
-
-/* Estilo para os controles de música */
-.music-controls {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-}
-
-/* Botão de Música */
-.music-toggle-btn {
-    background: #ff9800;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    cursor: pointer;
-    font-size: 1.2em;
-    border-radius: 5px;
-    transition: 0.3s;
-}
-
-.music-toggle-btn:hover {
-    background: #e68900;
+    .timer {
+        font-size: 40px;
+    }
 }
